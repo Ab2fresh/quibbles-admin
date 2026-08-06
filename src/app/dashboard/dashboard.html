@@ -1,0 +1,30 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <h1>Dashboard</h1>
+    <p>Welcome back. Here's what's happening on Quibbles today.</p>
+  </header>
+
+  <section class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats">
+      <div class="stat-icon">{{ stat.icon }}</div>
+      <div class="stat-info">
+        <span class="stat-label">{{ stat.label }}</span>
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-change" [class.negative]="!stat.positive">{{ stat.change }} this week</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="actions-grid">
+      <div class="action-card" *ngFor="let action of quickActions">
+        <div class="action-icon">{{ action.icon }}</div>
+        <div>
+          <h3>{{ action.title }}</h3>
+          <p>{{ action.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
