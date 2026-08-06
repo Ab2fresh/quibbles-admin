@@ -57,3 +57,59 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+# Quibbles Admin Tool — Phase 1 Submission
+
+**Repo:** https://github.com/Ab2fresh/quibbles-admin
+
+**AI tool used:** Claude — for requirements drafting, Angular scaffolding guidance, and component code generation
+
+---
+
+## What Was Built
+
+**1. Requirements Document**
+A full breakdown of planned admin functionality, covering:
+- Dashboard / Home
+- User Management
+- Post Management
+- Comment Management
+- Moderation Queue
+- Analytics & Reporting
+- Roles & Permissions
+- Platform Settings
+- Audit and Logs
+
+**2. Angular Project Scaffolding**
+- New Angular project created using the Angular CLI
+- Standalone components enabled
+- Routing configured
+
+**3. Dashboard Homepage**
+Displays key platform stats using dummy data:
+- Total Users
+- Active Posts
+- Total Comments
+- New Users (last 7 days)
+- Pending Moderation
+- Daily Engagement Rate
+
+Also includes a **Quick Actions** panel with shortcuts for common admin tasks (Review Moderation Queue, Manage Users, View Reported Posts, Platform Settings).
+
+---
+
+## Tech Stack
+- Angular (standalone components)
+- Plain CSS (no external UI library — lightweight first pass)
+
+---
+
+## Running Locally
+
+git clone https://github.com/Ab2fresh/quibbles-admin
+cd quibbles-admin
+npm install
+ng serve
+
+Then open http://127.0.0.1:4200/ in your browser.
+
+---
