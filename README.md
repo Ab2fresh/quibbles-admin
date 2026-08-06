@@ -10,7 +10,7 @@ To start a local development server, run:
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to http://127.0.0.1:4200/ . The application will automatically reload whenever you modify any of the source files.
+Once the server is running, open your browser and navigate to https://ab2fresh.github.io/quibbles-admin/ . The application will automatically reload whenever you modify any of the source files.
 
 ## Code scaffolding
 
@@ -110,6 +110,6 @@ cd quibbles-admin
 npm install
 ng serve
 
-Then open http://127.0.0.1:4200/ in your browser.
+Then open https://ab2fresh.github.io/quibbles-admin/ in your browser.
 
 ---
