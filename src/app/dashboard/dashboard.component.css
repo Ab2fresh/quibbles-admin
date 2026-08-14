@@ -42,8 +42,14 @@
   display: flex; align-items: center; justify-content: center;
   font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; color: #fff;
 }
-.brand-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; }
-.brand-name em { font-style: normal; color: var(--text-dim); font-weight: 500; margin-left: 3px; }
+.brand-mark-img {
+  height: 32px;
+  width: auto;
+  border-radius: 6px;
+  object-fit: contain;
+  display: block;
+}
+.brand-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; color: var(--text); }
 
 .rail-nav { display: flex; flex-direction: column; gap: 3px; flex: 1; }
 .rail-link {
