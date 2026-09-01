@@ -48,7 +48,8 @@
 
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "baseHref": "/quibbles-admin/"
             },
             "development": {
               "optimization": false,
