@@ -3,14 +3,14 @@
   <!-- SIDEBAR -->
     <aside class="rail">
     <div class="brand">
-      <img src="/assets/logo.png" alt="Quibbles logo" class="brand-mark-img">
+      <img src="assets/logo.png" alt="Quibbles logo" class="brand-mark-img">
       <span class="brand-name">Admin</span>
     </div>
 
     <nav class="rail-nav">
       <a class="rail-link active"><span class="dot"></span>Dashboard</a>
       <a class="rail-link">Users</a>
-      <a class="rail-link">Posts</a>
+      <a class="rail-link" routerLink="/posts">Posts</a>
       <a class="rail-link">Comments</a>
       <a class="rail-link">Moderation Queue <span class="pill">{{ pendingModeration }}</span></a>
       <a class="rail-link">Analytics</a>

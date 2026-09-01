@@ -1,0 +1,105 @@
+<div class="shell">
+
+  <aside class="rail">
+    <div class="brand">
+      <img src="assets/logo.png" alt="Quibbles logo" class="brand-mark-img">
+      <span class="brand-name"><em>Admin</em></span>
+    </div>
+
+    <nav class="rail-nav">
+      <a class="rail-link" routerLink="/">Dashboard</a>
+      <a class="rail-link active" routerLink="/posts"><span class="dot"></span>Posts</a>
+      <a class="rail-link">Users</a>
+      <a class="rail-link">Comments</a>
+      <a class="rail-link">Moderation Queue <span class="pill">47</span></a>
+      <a class="rail-link">Analytics</a>
+      <a class="rail-link">Roles &amp; Permissions</a>
+      <a class="rail-link">Settings</a>
+      <a class="rail-link">Audit Logs</a>
+    </nav>
+
+    <div class="rail-footer">
+      <div class="status-chip">
+        <span class="pulse-ring"></span>
+        Systems live
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="page-head">
+      <h1>Posts</h1>
+      <div class="search-bar">
+        <input type="text" placeholder="Search by title or author" [(ngModel)]="searchTerm" name="search">
+        <button class="search-btn">&#128269;</button>
+      </div>
+    </div>
+
+    <div class="filter-tabs">
+      <span [class.active]="activeFilter === 'All'" (click)="setFilter('All')">All</span>
+      <span [class.active]="activeFilter === 'Published'" (click)="setFilter('Published')">Published</span>
+      <span [class.active]="activeFilter === 'Flagged'" (click)="setFilter('Flagged')">Flagged</span>
+      <span [class.active]="activeFilter === 'Archived'" (click)="setFilter('Archived')">Archived</span>
+    </div>
+
+    <div class="bulk-bar" *ngIf="selectedCount > 0">
+      <span>{{ selectedCount }} selected</span>
+      <div class="bulk-actions">
+        <button class="bulk-btn approve">Approve</button>
+        <button class="bulk-btn hide">Hide</button>
+        <button class="bulk-btn delete">Delete</button>
+        <button class="bulk-btn clear" (click)="clearSelection()">Clear</button>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th class="checkbox-col"><input type="checkbox" (change)="toggleAll($any($event.target).checked)"></th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Community</th>
+            <th>Comments</th>
+            <th>Votes</th>
+            <th>Views</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let post of filteredPosts">
+            <td><input type="checkbox" [(ngModel)]="post.selected" [name]="'sel'+post.id"></td>
+            <td class="title-cell">
+              <div class="title-text">{{ post.title }}</div>
+              <div class="excerpt-text">{{ post.excerpt }}</div>
+            </td>
+            <td>{{ post.author }}</td>
+            <td>{{ post.community }}</td>
+            <td>{{ post.comments }}</td>
+            <td>{{ post.votes }}</td>
+            <td>{{ post.views }}</td>
+            <td class="created-cell">{{ post.created }}</td>
+            <td>
+              <span class="status-badge" [attr.data-status]="post.status">{{ post.status }}</span>
+            </td>
+            <td class="actions-cell">
+              <span class="action-icon" title="Pin">&#128204;</span>
+              <span class="action-icon" title="View community">&#128101;</span>
+              <span class="action-icon" title="Duplicate">&#128203;</span>
+              <span class="action-icon" title="Edit">&#9998;</span>
+              <span class="action-icon" title="View">&#128065;</span>
+              <span class="action-icon delete" title="Delete">&#128465;</span>
+            </td>
+          </tr>
+          <tr *ngIf="filteredPosts.length === 0">
+            <td colspan="10" class="empty-state">No posts match your search or filter.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
