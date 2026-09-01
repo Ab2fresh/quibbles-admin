@@ -38,8 +38,6 @@
 }
 
 .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 34px; }
-
-}
 .brand-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; color: var(--navy); }
 .brand-name em { font-style: normal; color: var(--text-dim); font-weight: 500; margin-left: 3px; }
 .brand-mark-img {
