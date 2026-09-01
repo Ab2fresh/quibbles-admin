@@ -30,9 +30,15 @@
 
     <div class="page-head">
       <h1>Posts</h1>
-      <div class="search-bar">
-        <input type="text" placeholder="Search by title or author" [(ngModel)]="searchTerm" name="search">
-        <button class="search-btn">&#128269;</button>
+      <div class="page-head-right">
+        <div class="search-bar">
+          <input type="text" placeholder="Search by title or author" [(ngModel)]="searchTerm" name="search">
+          <button class="search-btn">&#128269;</button>
+        </div>
+        <div class="user-menu">
+          <span class="username">AB2FRESH</span>
+          <button class="logout-btn">Log out</button>
+        </div>
       </div>
     </div>
 
