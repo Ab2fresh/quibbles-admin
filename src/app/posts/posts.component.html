@@ -32,7 +32,7 @@
       <h1>Posts</h1>
       <div class="page-head-right">
         <div class="search-bar">
-          <input type="text" placeholder="Search by title or author" [(ngModel)]="searchTerm" name="search">
+          <input type="text" placeholder="Search by title or author" [(ngModel)]="searchTerm" name="search" (ngModelChange)="onSearchChange()">
           <button class="search-btn">&#128269;</button>
         </div>
         <div class="user-menu">
@@ -42,19 +42,28 @@
       </div>
     </div>
 
-    <div class="filter-tabs">
-      <span [class.active]="activeFilter === 'All'" (click)="setFilter('All')">All</span>
-      <span [class.active]="activeFilter === 'Published'" (click)="setFilter('Published')">Published</span>
-      <span [class.active]="activeFilter === 'Flagged'" (click)="setFilter('Flagged')">Flagged</span>
-      <span [class.active]="activeFilter === 'Archived'" (click)="setFilter('Archived')">Archived</span>
+    <div class="toolbar-row">
+      <div class="filter-tabs">
+        <span [class.active]="activeFilter === 'All'" (click)="setFilter('All')">All</span>
+        <span [class.active]="activeFilter === 'Published'" (click)="setFilter('Published')">Published</span>
+        <span [class.active]="activeFilter === 'Flagged'" (click)="setFilter('Flagged')">Flagged</span>
+        <span [class.active]="activeFilter === 'Archived'" (click)="setFilter('Archived')">Archived</span>
+      </div>
+
+      <div class="toolbar-right">
+        <select class="community-select" [(ngModel)]="communityFilter" (ngModelChange)="setCommunityFilter($event)" name="community">
+          <option *ngFor="let c of communities" [value]="c">{{ c === 'All' ? 'All communities' : c }}</option>
+        </select>
+        <button class="export-btn" (click)="exportCsv()">&#8681; Export CSV</button>
+      </div>
     </div>
 
     <div class="bulk-bar" *ngIf="selectedCount > 0">
       <span>{{ selectedCount }} selected</span>
       <div class="bulk-actions">
-        <button class="bulk-btn approve">Approve</button>
-        <button class="bulk-btn hide">Hide</button>
-        <button class="bulk-btn delete">Delete</button>
+        <button class="bulk-btn approve" (click)="approveSelected()">Approve</button>
+        <button class="bulk-btn hide" (click)="hideSelected()">Hide</button>
+        <button class="bulk-btn delete" (click)="requestBulkDelete()">Delete</button>
         <button class="bulk-btn clear" (click)="clearSelection()">Clear</button>
       </div>
     </div>
@@ -64,22 +73,23 @@
         <thead>
           <tr>
             <th class="checkbox-col"><input type="checkbox" (change)="toggleAll($any($event.target).checked)"></th>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Community</th>
-            <th>Comments</th>
-            <th>Votes</th>
-            <th>Views</th>
-            <th>Created</th>
+            <th class="sortable" (click)="sortBy('title')">Title <span class="sort-icon">{{ sortIcon('title') }}</span></th>
+            <th class="sortable" (click)="sortBy('author')">Author <span class="sort-icon">{{ sortIcon('author') }}</span></th>
+            <th class="sortable" (click)="sortBy('community')">Community <span class="sort-icon">{{ sortIcon('community') }}</span></th>
+            <th class="sortable" (click)="sortBy('comments')">Comments <span class="sort-icon">{{ sortIcon('comments') }}</span></th>
+            <th class="sortable" (click)="sortBy('votes')">Votes <span class="sort-icon">{{ sortIcon('votes') }}</span></th>
+            <th class="sortable" (click)="sortBy('views')">Views <span class="sort-icon">{{ sortIcon('views') }}</span></th>
+            <th class="sortable" (click)="sortBy('reports')">Reports <span class="sort-icon">{{ sortIcon('reports') }}</span></th>
+            <th class="sortable" (click)="sortBy('created')">Created <span class="sort-icon">{{ sortIcon('created') }}</span></th>
             <th>Status</th>
             <th class="actions-col">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let post of filteredPosts">
+          <tr *ngFor="let post of paginatedPosts">
             <td><input type="checkbox" [(ngModel)]="post.selected" [name]="'sel'+post.id"></td>
-            <td class="title-cell">
-              <div class="title-text">{{ post.title }}</div>
+            <td class="title-cell" (click)="openDetail(post)">
+              <div class="title-text">{{ post.title }} <span class="media-icon" *ngIf="post.hasMedia" title="Has media">&#128247;</span></div>
               <div class="excerpt-text">{{ post.excerpt }}</div>
             </td>
             <td>{{ post.author }}</td>
@@ -87,25 +97,105 @@
             <td>{{ post.comments }}</td>
             <td>{{ post.votes }}</td>
             <td>{{ post.views }}</td>
+            <td>
+              <span class="report-badge" *ngIf="post.reports > 0">{{ post.reports }}</span>
+              <span *ngIf="post.reports === 0" class="report-zero">—</span>
+            </td>
             <td class="created-cell">{{ post.created }}</td>
             <td>
               <span class="status-badge" [attr.data-status]="post.status">{{ post.status }}</span>
+              <div class="flag-reason" *ngIf="post.flagReason">{{ post.flagReason }}</div>
             </td>
             <td class="actions-cell">
-              <span class="action-icon" title="Pin">&#128204;</span>
-              <span class="action-icon" title="View community">&#128101;</span>
-              <span class="action-icon" title="Duplicate">&#128203;</span>
-              <span class="action-icon" title="Edit">&#9998;</span>
-              <span class="action-icon" title="View">&#128065;</span>
-              <span class="action-icon delete" title="Delete">&#128465;</span>
+              <span class="action-icon" title="View / Edit" (click)="openDetail(post)">&#128065;</span>
+              <span class="action-icon" title="Flag" *ngIf="post.status !== 'Flagged'" (click)="openFlagModal(post)">&#128681;</span>
+              <span class="action-icon" title="Archive" *ngIf="post.status !== 'Archived'" (click)="archivePost(post)">&#128230;</span>
+              <span class="action-icon delete" title="Delete" (click)="requestDelete(post)">&#128465;</span>
             </td>
           </tr>
-          <tr *ngIf="filteredPosts.length === 0">
-            <td colspan="10" class="empty-state">No posts match your search or filter.</td>
+          <tr *ngIf="paginatedPosts.length === 0">
+            <td colspan="11" class="empty-state">No posts match your search or filter.</td>
           </tr>
         </tbody>
       </table>
+
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">&#8592; Prev</button>
+        <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next &#8594;</button>
+      </div>
     </div>
 
   </main>
+
+  <div class="overlay" *ngIf="detailPost" (click)="closeDetail()"></div>
+  <div class="detail-panel" *ngIf="detailPost">
+    <div class="detail-header">
+      <span class="status-badge" [attr.data-status]="detailPost.status">{{ detailPost.status }}</span>
+      <button class="close-btn" (click)="closeDetail()">&times;</button>
+    </div>
+
+    <ng-container *ngIf="!editMode">
+      <h2>{{ detailPost.title }}</h2>
+      <div class="detail-meta">
+        by <strong>{{ detailPost.author }}</strong> in <strong>{{ detailPost.community }}</strong> &middot; {{ detailPost.created }}
+      </div>
+      <p class="detail-body">{{ detailPost.body }}</p>
+
+      <div class="detail-stats">
+        <div><span>{{ detailPost.comments }}</span>Comments</div>
+        <div><span>{{ detailPost.votes }}</span>Votes</div>
+        <div><span>{{ detailPost.views }}</span>Views</div>
+        <div><span>{{ detailPost.reports }}</span>Reports</div>
+      </div>
+
+      <div class="mod-info" *ngIf="detailPost.flagReason || detailPost.moderatedBy">
+        <div class="mod-info-title">Moderation Info</div>
+        <div *ngIf="detailPost.flagReason"><strong>Reason:</strong> {{ detailPost.flagReason }}</div>
+        <div *ngIf="detailPost.moderatedBy"><strong>Moderated by:</strong> {{ detailPost.moderatedBy }} &middot; {{ detailPost.moderatedAt }}</div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="detail-btn primary" (click)="enterEditMode()">Edit Post</button>
+        <button class="detail-btn ghost" *ngIf="detailPost.status !== 'Flagged'" (click)="openFlagModal(detailPost)">Flag</button>
+        <button class="detail-btn ghost" *ngIf="detailPost.status !== 'Archived'" (click)="archivePost(detailPost)">Archive</button>
+        <button class="detail-btn danger" (click)="requestDelete(detailPost)">Delete</button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="editMode">
+      <label class="field-label">Title</label>
+      <input class="field-input" type="text" [(ngModel)]="editTitle" name="editTitle">
+
+      <label class="field-label">Body</label>
+      <textarea class="field-textarea" rows="8" [(ngModel)]="editBody" name="editBody"></textarea>
+
+      <div class="detail-actions">
+        <button class="detail-btn primary" (click)="saveEdit()">Save Changes</button>
+        <button class="detail-btn ghost" (click)="cancelEdit()">Cancel</button>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="overlay" *ngIf="deleteTarget" (click)="cancelDelete()"></div>
+  <div class="confirm-modal" *ngIf="deleteTarget">
+    <h3>Delete {{ deleteTarget === 'bulk' ? (selectedCount + ' posts') : 'this post' }}?</h3>
+    <p>This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="detail-btn ghost" (click)="cancelDelete()">Cancel</button>
+      <button class="detail-btn danger" (click)="confirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+
+  <div class="overlay" *ngIf="flagModalTarget" (click)="cancelFlag()"></div>
+  <div class="confirm-modal" *ngIf="flagModalTarget">
+    <h3>Flag this post</h3>
+    <p>Provide a reason — this will be visible to other moderators.</p>
+    <textarea class="field-textarea" rows="3" placeholder="e.g. Spam, misinformation, harassment..." [(ngModel)]="flagReasonInput" name="flagReason"></textarea>
+    <div class="confirm-actions">
+      <button class="detail-btn ghost" (click)="cancelFlag()">Cancel</button>
+      <button class="detail-btn danger" [disabled]="!flagReasonInput.trim()" (click)="confirmFlag()">Flag Post</button>
+    </div>
+  </div>
+
 </div>
